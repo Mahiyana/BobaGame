@@ -17,7 +17,7 @@ window.push_handlers(keys)
 
 class Character(pyglet.sprite.Sprite):
     def __init__(self,image):
-        pyglet.sprite.Sprite.__init__(self,image)
+        super().__init__(image)
 
     def move_left(self):
         self.image = pyglet.image.load("boba_standing_left.png")
