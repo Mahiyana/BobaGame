@@ -12,23 +12,45 @@ platform_width = 32
 platform_height = 32
 collision_points = [[9,9],[32,0],[9,54],[32,32],[54,54],[32,64],[9,54],[0,32]] 
 
-image = pyglet.resource.image('postac.png')
-postac = pyglet.sprite.Sprite(image)
 keys = key.KeyStateHandler()
 window.push_handlers(keys)
-class Player:
+
+class Character(pyglet.sprite.Sprite):
+    def __init__(self,image):
+        pyglet.sprite.Sprite.__init__(self,image)
+
+    def move_left(self):
+        self.image = pyglet.image.load("boba_standing_left.png")
+        print("ODWRACAM SIEM W LEWO")
+        return self
+
+    def move_right(self):
+        print("ODWRACAM SIEM W PRAWO")
+        self.image = pyglet.image.load("boba_standing_right.png")
+        return self
+
+class Player():
     dx = 0
     dy = 0 
     vy = 0
     vx = 0
     ay = 0
-    ax = 0 
+    ax = 0
+    x = 0
+    y = 0
     standing = True
-    
+     
+    postac = Character(pyglet.image.load("boba_standing_right.png"))
     def jump(self):
         if self.standing:
             self.vy = 2
             self.standing = False
+    def left(self):
+        self.postac = self.postac.move_left()
+
+    def right(self):
+        self.postac = self.postac.move_right()
+
 
 state = Player()
 
@@ -122,46 +144,50 @@ level.map.set_platform('trawa', 7, 0)
 def on_draw():
     window.clear()
     level.map.draw()
-    postac.draw()
+    state.postac.draw()
     fps_display.draw()
     window.flip()
 
 def update(dt):
     state.vx = 0
     if keys[key.RIGHT]:
-            state.vx = 1
+        state.vx = 1
+        state.right()
+
     if keys[key.LEFT]:
-            state.vx = -1
+        state.vx = -1
+        state.left()
+
     if keys[key.SPACE]:
          state.jump() 
 
-    old_x, old_y = postac.x, postac.y
+    old_x, old_y = state.postac.x, state.postac.y
     
-    postac.x += state.vx * dt * 500
-    postac.y += state.vy * dt * 500
+    state.postac.x += state.vx * dt * 500
+    state.postac.y += state.vy * dt * 500
     
-    if postac.x < 0: postac.x = 0
-    elif postac.x > window.width - postac.width: postac.x = window.width - postac.width
+    if state.postac.x < 0: state.postac.x = 0
+    elif state.postac.x > window.width - state.postac.width: state.postac.x = window.width - state.postac.width
     
-    if postac.y <= 0: 
-        postac.y = 0
+    if state.postac.y <= 0: 
+        state.postac.y = 0
         state.standing = True
         state.vy = 0
-    elif postac.y > window.height - postac.height: postac.y = window.height - postac.height
+    elif state.postac.y > window.height - state.postac.height: state.postac.y = window.height - state.postac.height
    
     state.vy -= 9.82 * dt
-    new_xy = level.map.collision(old_x, old_y, postac.x, postac.y, postac.width, postac.height)
+    new_xy = level.map.collision(old_x, old_y, state.postac.x, state.postac.y, state.postac.width, state.postac.height)
     if new_xy:
         print(new_xy)
         if new_xy[0]:
-            postac.x = new_xy[0]
+            state.postac.x = new_xy[0]
             state.vx = 0
             postac_y = old_y
         if new_xy[1]:
-            postac.y = new_xy[1]
+            state.postac.y = new_xy[1]
             state.vy = 0
             state.standing = True
-            postac.x = old_x
+            state.postac.x = old_x
 
     
 
