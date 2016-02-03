@@ -8,6 +8,10 @@ config = pyglet.gl.Config(alpha_size=8, double_buffer=True)
 window = pyglet.window.Window(config=config )
 fps_display = pyglet.clock.ClockDisplay()
 
+platform_width = 32
+platform_height = 32
+collision_points = [[9,9],[32,0],[9,54],[32,32],[54,54],[32,64],[9,54],[0,32]] 
+
 image = pyglet.resource.image('postac.png')
 postac = pyglet.sprite.Sprite(image)
 keys = key.KeyStateHandler()
@@ -28,7 +32,7 @@ class Player:
 
 state = Player()
 
-class Platforma(pyglet.sprite.Sprite):
+class Platform(pyglet.sprite.Sprite):
     def __init__(self, name):
         image = pyglet.resource.image(name+".png")
         super().__init__(image)
@@ -54,45 +58,52 @@ class Map:
                 cell.draw()
 
     def set_platform(self, name, x, y):
-        self.map[x][y] = platform = Platforma(name)
-        platform.x = x * 32
-        platform.y = y * 32
+        self.map[x][y] = platform = Platform(name)
+        platform.x = x * platform_width
+        platform.y = y * platform_height
 
-    def kolizja(self, xp, yp, xk, yk, w, h):
+    def check_collision_points(self, x_postaci, y_postaci, x_platform, y_platform):
+      for point in collision_points:
+        if(x_platform*platform_width < point[0] + x_postaci < (x_platform+1)*platform_width) and (y_platform*platform_height < point[1] + y_postaci < (y_platform+1)*platform_height):
+            return True
+      return False
+
+
+    def collision(self, xp, yp, xk, yk, w, h):
         xp, yp, xk, yk = int(xp), int(yp), int(xk), int(yk)
-        min_x = int(xk/32)
-        max_x = min([self.width-1, math.ceil((xk+w)/32)])
-        min_y = int(yk/32)
-        max_y = min([self.height-1, math.ceil((yk+h)/32)])
+       
+        min_x = int(xk/platform_width)
+        max_x = min([self.width-1, math.ceil((xk+w)/platform_width)])
+        min_y = int(yk/platform_height)
+        max_y = min([self.height-1, math.ceil((yk+h)/platform_height)])
+        
 
         range_x = range(min_x, max_x)
+        new_x = None
+        new_y = None
         if xp > xk: range_x = reversed(range_x)
         for x in range_x:
             range_y = range(min_y, max_y)
             if yp > yk: range_y = reversed(range_y)
             for y in range_y:
-                if self.map[x][y]:
-                    nx, ny = xp, yp
-                    left, right, up, down = 9001, 9001, 9001, 9001
-                    if x*32 <= xk < (x+1)*32:
-                        left = (x+1)*32-xk
-                        nx = (x+1)*32
-                    if x*32 <= xk+w < (x+1)*32:
-                        right = xk+w - x*32
-                        nx = x*32 - w
-                    if y*32 <= yk < (y+1)*32:
-                        up = (y+1)*42-yk
-                        ny = (y+1)*32
-                    if y*32 <= yk+h < (y+1)*32:
-                        down = yk+h - y*32
-                        ny = y*32 - h
-
-                    if min([left, right]) < min([up, down]):
-                        return (nx, None)
-                    else:
-                        return (None, ny)
+                if self.map[x][y]: # and self.check_collision_points(xk,yk,x,y): 
+                    if(xk+w<x*platform_width or (x+1)*platform_width > xk):  #(x*platform_width < xk < (x+1)*platform_width or x*platform_width < xk+w < (x+1)*platform_width):
+                        if(xp+w <= x*platform_width): #left side
+                            new_x = x*platform_width - w
+                        elif(x*platform_width<xp): #right side
+                            new_x = (x+1)*platform_width
+                    
+                    if(yk+h<y*platform_width or (y+1)*platform_height > yk):  #(y*platform_height < yk < (y+1)*platform_width):
+                        if(yp<y*platform_height): #under
+                            new_y = y*platform_height - h
+                        else:
+                            new_y = (y+1)*platform_height
+                    
+                    if(new_x): return (new_x, None)
+                    if(new_y): return (None, new_y)
+          
         return False
-
+          
 class Level:
     map = None
 
@@ -125,17 +136,21 @@ def update(dt):
          state.jump() 
 
     old_x, old_y = postac.x, postac.y
+    
     postac.x += state.vx * dt * 500
+    postac.y += state.vy * dt * 500
+    
     if postac.x < 0: postac.x = 0
     elif postac.x > window.width - postac.width: postac.x = window.width - postac.width
-    postac.y += state.vy * dt * 500
+    
     if postac.y <= 0: 
         postac.y = 0
         state.standing = True
         state.vy = 0
     elif postac.y > window.height - postac.height: postac.y = window.height - postac.height
+   
     state.vy -= 9.82 * dt
-    new_xy = level.map.kolizja(old_x, old_y, postac.x, postac.y, postac.width, postac.height)
+    new_xy = level.map.collision(old_x, old_y, postac.x, postac.y, postac.width, postac.height)
     if new_xy:
         print(new_xy)
         if new_xy[0]:
