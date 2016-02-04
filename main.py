@@ -9,6 +9,8 @@ fps_display = pyglet.clock.ClockDisplay()
 
 platform_width = 32
 platform_height = 32
+char_width = 32
+char_height = 64
 collision_points = [[9,9],[32,0],[9,54],[32,32],[54,54],[32,64],[9,54],[0,32]] 
 
 keys = key.KeyStateHandler()
@@ -219,12 +221,6 @@ items.add_item(CollectibleItem("star",200,200,20,20))
 items.add_item(CollectibleItem("star",250,150,20,20)) 
 items.add_item(CollectibleItem("star",500,300,20,20)) 
 
-batch = pyglet.graphics.Batch()
-background = pyglet.graphics.OrderedGroup(0)
-foreground = pyglet.graphics.OrderedGroup(1)
-
-batch.add(4, GL_QUADS, foreground, state.postac)
-
 @window.event
 def on_draw():
     window.clear()
@@ -271,7 +267,6 @@ def update(dt):
         if new_xy[0]:
             state.postac.x = new_xy[0]
             state.vx = 0
-            postac_y = old_y
         
         if new_xy[1]:
             state.postac.y = new_xy[1]
