@@ -16,17 +16,35 @@ keys = key.KeyStateHandler()
 window.push_handlers(keys)
 
 class Character(pyglet.sprite.Sprite):
+        
     def __init__(self,image):
         super().__init__(image)
+        self.standing_left = pyglet.image.load("boba_standing_left.png")
+        self.moving_left_1 = pyglet.image.load("boba_moving_left_1.png")
+        self.moving_left_2 = pyglet.image.load("boba_moving_left_2.png")
+        self.animation_left = pyglet.image.Animation.from_image_sequence([
+            self.standing_left, self.moving_left_1, self.moving_left_2],0.1,True)
+
+        self.standing_right = pyglet.image.load("boba_standing_right.png")
+        self.moving_right_1 = pyglet.image.load("boba_moving_right_1.png")
+        self.moving_right_2 = pyglet.image.load("boba_moving_right_2.png")
+        self.animation_right = pyglet.image.Animation.from_image_sequence([
+            self.standing_right, self.moving_right_1, self.moving_right_2],0.1,True)
 
     def move_left(self):
-        self.image = pyglet.image.load("boba_standing_left.png")
-        print("ODWRACAM SIEM W LEWO")
+        self.image = self.animation_left
         return self
 
     def move_right(self):
-        print("ODWRACAM SIEM W PRAWO")
-        self.image = pyglet.image.load("boba_standing_right.png")
+        self.image = self.animation_right
+        return self
+
+    def stand_left(self):
+        self.image = self.standing_left
+        return self
+
+    def stand_right(self):
+        self.image = self.standing_right
         return self
 
 class Player():
@@ -39,17 +57,40 @@ class Player():
     x = 0
     y = 0
     standing = True
+    standing_x = True
+    last_direction = None
      
     postac = Character(pyglet.image.load("boba_standing_right.png"))
     def jump(self):
         if self.standing:
             self.vy = 2
             self.standing = False
+    
     def left(self):
-        self.postac = self.postac.move_left()
+        if self.standing_x:
+            self.postac = self.postac.move_left()
+            self.standing_x = False
+            self.last_direction = "left"
 
     def right(self):
-        self.postac = self.postac.move_right()
+        if self.standing_x:
+            self.postac = self.postac.move_right()
+            self.standing_x = False    
+            self.last_direction = "right"
+    
+    def stop_left(self):
+        self.postac = self.postac.stand_left()
+        self.standing_x = True
+
+    def stop_right(self):
+        self.postac = self.postac.stand_right()
+        self.standing_x = True
+    
+    def stop_moving(self):
+        if self.last_direction == "left":
+            self.stop_left()
+        else:
+            self.stop_right()
 
 
 state = Player()
@@ -148,6 +189,14 @@ def on_draw():
     fps_display.draw()
     window.flip()
 
+"""
+@window.event
+def on_key_release(symbol, modifiers):
+    if symbol == key.LEFT:
+        state.stop_left()
+    if symbol == key.RIGHT:
+        state.stop_right()
+"""
 def update(dt):
     state.vx = 0
     if keys[key.RIGHT]:
@@ -157,6 +206,9 @@ def update(dt):
     if keys[key.LEFT]:
         state.vx = -1
         state.left()
+    
+    if not(keys[key.RIGHT] or keys[key.LEFT]):
+        state.stop_moving()
 
     if keys[key.SPACE]:
          state.jump() 
