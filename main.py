@@ -2,7 +2,6 @@
 import pyglet
 from pyglet.window import key
 import math
-from intersection import intersection
 
 config = pyglet.gl.Config(alpha_size=8, double_buffer=True)
 window = pyglet.window.Window(config=config )
@@ -170,16 +169,61 @@ class Map:
 class Level:
     map = None
 
-    def __init__(self):
-        self.map = Map()
+    def __init__(self,width,height):
+        self.map = Map(width,height)
 
-level = Level()
+class CollectibleItem(pyglet.sprite.Sprite):
+    def __init__(self, name,x,y,width,height):
+       #self.width = width
+       #self.height = height
+        self.taken = False
+        image = pyglet.resource.image(name+".png")
+        super().__init__(image)
+        self.x = x
+        self.y = y
+        
+
+class CollectionOfItems():
+    collection = []
+
+    def add_item(self,item):
+        self.collection.append(item)
+
+    def draw(self):
+        for item in self.collection:
+            if not item.taken:
+                item.draw()
+
+    def collision(self,char_x,char_y):
+        for item in self.collection:
+            if not item.taken:
+                if(char_x < item.x < char_x + char_width or char_x < item.x + item.width < char_x + char_width) and (char_y < item.y < char_y + char_height or char_y < item.y + item.height < char_y + char_height):
+                        item.taken = True
+
+level = Level(100,100)
 level.map.set_platform('trawa', 4, 3)
 level.map.set_platform('trawa', 4, 4)
 level.map.set_platform('trawa', 4, 5)
 level.map.set_platform('trawa', 5, 0)
 level.map.set_platform('trawa', 6, 0)
 level.map.set_platform('trawa', 7, 0)
+level.map.set_platform('trawa', 10, 3)
+level.map.set_platform('trawa', 11, 3)
+level.map.set_platform('trawa', 12, 3)
+level.map.set_platform('trawa', 14, 5)
+level.map.set_platform('trawa', 15, 5)
+level.map.set_platform('trawa', 16, 5)
+
+items = CollectionOfItems()
+items.add_item(CollectibleItem("star",200,200,20,20)) 
+items.add_item(CollectibleItem("star",250,150,20,20)) 
+items.add_item(CollectibleItem("star",500,300,20,20)) 
+
+batch = pyglet.graphics.Batch()
+background = pyglet.graphics.OrderedGroup(0)
+foreground = pyglet.graphics.OrderedGroup(1)
+
+batch.add(4, GL_QUADS, foreground, state.postac)
 
 @window.event
 def on_draw():
@@ -187,16 +231,9 @@ def on_draw():
     level.map.draw()
     state.postac.draw()
     fps_display.draw()
+    items.draw()
     window.flip()
 
-"""
-@window.event
-def on_key_release(symbol, modifiers):
-    if symbol == key.LEFT:
-        state.stop_left()
-    if symbol == key.RIGHT:
-        state.stop_right()
-"""
 def update(dt):
     state.vx = 0
     if keys[key.RIGHT]:
@@ -230,18 +267,18 @@ def update(dt):
     state.vy -= 9.82 * dt
     new_xy = level.map.collision(old_x, old_y, state.postac.x, state.postac.y, state.postac.width, state.postac.height)
     if new_xy:
-        print(new_xy)
+        #print(new_xy)
         if new_xy[0]:
             state.postac.x = new_xy[0]
             state.vx = 0
             postac_y = old_y
+        
         if new_xy[1]:
             state.postac.y = new_xy[1]
             state.vy = 0
             state.standing = True
             state.postac.x = old_x
-
-    
+    items.collision(state.postac.x, state.postac.y)
 
 pyglet.clock.schedule_interval(update, 1/60.0)
 pyglet.app.run()
