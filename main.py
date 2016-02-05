@@ -221,9 +221,13 @@ items.add_item(CollectibleItem("star",200,200,20,20))
 items.add_item(CollectibleItem("star",250,150,20,20)) 
 items.add_item(CollectibleItem("star",500,300,20,20)) 
 
+background_img = pyglet.resource.image("background.png")
+background = pyglet.sprite.Sprite(background_img)
+
 @window.event
 def on_draw():
     window.clear()
+    background.draw()
     level.map.draw()
     state.postac.draw()
     fps_display.draw()
