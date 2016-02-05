@@ -101,8 +101,38 @@ class Platform(pyglet.sprite.Sprite):
         image = pyglet.resource.image(name+".png")
         super().__init__(image)
 
+class CollectibleItem(pyglet.sprite.Sprite):
+    def __init__(self, name,x,y,width,height):
+       #self.width = width
+       #self.height = height
+        self.taken = False
+        image = pyglet.resource.image(name+".png")
+        super().__init__(image)
+        self.x = x
+        self.y = y
+        
+
+class CollectionOfItems():
+    collection = []
+
+    def add_item(self,item):
+        self.collection.append(item)
+
+    def draw(self):
+        for item in self.collection:
+            if not item.taken:
+                item.draw()
+
+    def collision(self,char_x,char_y):
+        for item in self.collection:
+            if not item.taken:
+                if(char_x < item.x < char_x + char_width or char_x < item.x + item.width < char_x + char_width) and (char_y < item.y < char_y + char_height or char_y < item.y + item.height < char_y + char_height):
+                        item.taken = True
+
+
 class Map:
     map = None
+    items = CollectionOfItems()
 
     def __init__(self, width=10, height=10):
         self.map = []
@@ -120,6 +150,7 @@ class Map:
             for cell in column:
                 if not cell: continue
                 cell.draw()
+        self.items.draw()        
 
     def set_platform(self, name, x, y):
         self.map[x][y] = platform = Platform(name)
@@ -174,34 +205,6 @@ class Level:
     def __init__(self,width,height):
         self.map = Map(width,height)
 
-class CollectibleItem(pyglet.sprite.Sprite):
-    def __init__(self, name,x,y,width,height):
-       #self.width = width
-       #self.height = height
-        self.taken = False
-        image = pyglet.resource.image(name+".png")
-        super().__init__(image)
-        self.x = x
-        self.y = y
-        
-
-class CollectionOfItems():
-    collection = []
-
-    def add_item(self,item):
-        self.collection.append(item)
-
-    def draw(self):
-        for item in self.collection:
-            if not item.taken:
-                item.draw()
-
-    def collision(self,char_x,char_y):
-        for item in self.collection:
-            if not item.taken:
-                if(char_x < item.x < char_x + char_width or char_x < item.x + item.width < char_x + char_width) and (char_y < item.y < char_y + char_height or char_y < item.y + item.height < char_y + char_height):
-                        item.taken = True
-
 level = Level(100,100)
 level.map.set_platform('trawa', 4, 3)
 level.map.set_platform('trawa', 4, 4)
@@ -216,10 +219,9 @@ level.map.set_platform('trawa', 14, 5)
 level.map.set_platform('trawa', 15, 5)
 level.map.set_platform('trawa', 16, 5)
 
-items = CollectionOfItems()
-items.add_item(CollectibleItem("star",200,200,20,20)) 
-items.add_item(CollectibleItem("star",250,150,20,20)) 
-items.add_item(CollectibleItem("star",500,300,20,20)) 
+level.map.items.add_item(CollectibleItem("star",200,200,20,20)) 
+level.map.items.add_item(CollectibleItem("star",250,150,20,20)) 
+level.map.items.add_item(CollectibleItem("star",500,300,20,20)) 
 
 background_img = pyglet.resource.image("background.png")
 background = pyglet.sprite.Sprite(background_img)
@@ -231,7 +233,6 @@ def on_draw():
     level.map.draw()
     state.postac.draw()
     fps_display.draw()
-    items.draw()
     window.flip()
 
 def update(dt):
@@ -277,7 +278,7 @@ def update(dt):
             state.vy = 0
             state.standing = True
             state.postac.x = old_x
-    items.collision(state.postac.x, state.postac.y)
+    level.map.items.collision(state.postac.x, state.postac.y)
 
 pyglet.clock.schedule_interval(update, 1/60.0)
 pyglet.app.run()
