@@ -174,28 +174,32 @@ class Map:
         
 
         range_x = range(min_x, max_x)
-        new_x = None
-        new_y = None
+        new_x = xk
+        new_y = yk
+        col_x, col_y = False, False
         if xp > xk: range_x = reversed(range_x)
         for x in range_x:
             range_y = range(min_y, max_y)
             if yp > yk: range_y = reversed(range_y)
             for y in range_y:
                 if self.map[x][y]: # and self.check_collision_points(xk,yk,x,y): 
-                    if(xk+w<x*platform_width or (x+1)*platform_width > xk):  #(x*platform_width < xk < (x+1)*platform_width or x*platform_width < xk+w < (x+1)*platform_width):
-                        if(xp+w <= x*platform_width): #left side
+                    if not (xk > (x+1)*platform_width or xk+w < x*platform_width) and not (yp+h <= y*platform_height or yp >= (y+1)*platform_height):
+                        if xp < x*platform_width:
                             new_x = x*platform_width - w
-                        elif(x*platform_width<xp): #right side
+                        elif xp > x*platform_width:
                             new_x = (x+1)*platform_width
+                        col_x = True
                     
-                    if(yk+h<y*platform_width or (y+1)*platform_height > yk):  #(y*platform_height < yk < (y+1)*platform_width):
-                        if(yp<y*platform_height): #under
+                    if not (yk > (y+1)*platform_height or yk+h < y*platform_height) and not (new_x+w <= x*platform_width or new_x >= (x+1)*platform_width):
+                        if yp < y*platform_height:
                             new_y = y*platform_height - h
-                        else:
+                        elif yp > y*platform_height:
                             new_y = (y+1)*platform_height
+                        col_y = True
                     
-                    if(new_x): return (new_x, None)
-                    if(new_y): return (None, new_y)
+                    if col_x and col_y: return (new_x, new_y)
+                    if(col_x): return (new_x, None)
+                    if(col_y): return (None, new_y)
           
         return False
           
@@ -276,8 +280,8 @@ def update(dt):
         if new_xy[1]:
             state.postac.y = new_xy[1]
             state.vy = 0
-            state.standing = True
-            state.postac.x = old_x
+            if new_xy[1] == old_y:
+                state.standing = True
     level.map.items.collision(state.postac.x, state.postac.y)
 
 pyglet.clock.schedule_interval(update, 1/60.0)
