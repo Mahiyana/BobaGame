@@ -133,6 +133,8 @@ class CollectionOfItems():
 class Map:
     map = None
     items = CollectionOfItems()
+    map_x = 0
+    map_y = 0
 
     def __init__(self, width=10, height=10):
         self.map = []
@@ -156,6 +158,19 @@ class Map:
         self.map[x][y] = platform = Platform(name)
         platform.x = x * platform_width
         platform.y = y * platform_height
+
+    def redraw_right(self,char_x):
+       for column in self.map:
+           for cell in column:
+               if not cell: continue
+               cell.x = cell.x - char_x
+
+    def redraw_left(self,char_x):
+       for column in self.map:
+           for cell in column:
+               if not cell: continue
+               cell.x = cell.x + char_x
+
 
     def check_collision_points(self, x_postaci, y_postaci, x_platform, y_platform):
       for point in collision_points:
@@ -218,10 +233,17 @@ level.map.set_platform('trawa', 12, 3)
 level.map.set_platform('trawa', 14, 5)
 level.map.set_platform('trawa', 15, 5)
 level.map.set_platform('trawa', 16, 5)
+level.map.set_platform('trawa', 18, 3)
+level.map.set_platform('trawa', 19, 3)
+level.map.set_platform('trawa', 20, 3)
+level.map.set_platform('trawa', 22, 3)
+level.map.set_platform('trawa', 23, 3)
+level.map.set_platform('trawa', 24, 3)
 
 level.map.items.add_item(CollectibleItem("star",200,200,20,20)) 
 level.map.items.add_item(CollectibleItem("star",250,150,20,20)) 
 level.map.items.add_item(CollectibleItem("star",500,300,20,20)) 
+level.map.items.add_item(CollectibleItem("star",800,300,20,20)) 
 
 background_img = pyglet.resource.image("background.png")
 background = pyglet.sprite.Sprite(background_img)
@@ -240,10 +262,12 @@ def update(dt):
     if keys[key.RIGHT]:
         state.vx = 1
         state.right()
-
+        level.map.redraw_right(state.postac.x)
+    
     if keys[key.LEFT]:
         state.vx = -1
         state.left()
+        level.map.redraw_left(state.postac.x)
     
     if not(keys[key.RIGHT] or keys[key.LEFT]):
         state.stop_moving()
