@@ -19,7 +19,6 @@ platform_width = 32
 platform_height = 32
 char_width = 32
 char_height = 64
-collision_points = [[9,9],[32,0],[9,54],[32,32],[54,54],[32,64],[9,54],[0,32]] 
 
 keys = key.KeyStateHandler()
 window.push_handlers(keys)
@@ -68,12 +67,12 @@ def update(dt):
     if keys[key.RIGHT]:
         state.vx = 1
         state.right()
-        level.map.redraw_right(state.postac.x)
+        #level.map.redraw_right(state.postac.x)
     
     if keys[key.LEFT]:
         state.vx = -1
         state.left()
-        level.map.redraw_left(state.postac.x)
+        #level.map.redraw_left(state.postac.x)
     
     if not(keys[key.RIGHT] or keys[key.LEFT]):
         state.stop_moving()
@@ -82,32 +81,12 @@ def update(dt):
          state.jump() 
 
     old_x, old_y = state.postac.x, state.postac.y
-    
     state.postac.x += state.vx * dt * 500
     state.postac.y += state.vy * dt * 500
-    
-    if state.postac.x < 0: state.postac.x = 0
-    elif state.postac.x > window.width - state.postac.width: state.postac.x = window.width - state.postac.width
-    
-    if state.postac.y <= 0: 
-        state.postac.y = 0
-        state.standing = True
-        state.vy = 0
-    elif state.postac.y > window.height - state.postac.height: state.postac.y = window.height - state.postac.height
-   
+    state.check_borders(window.width, window.height)
     state.vy -= 9.82 * dt
     new_xy = level.map.collision(old_x, old_y, state.postac.x, state.postac.y, state.postac.width, state.postac.height)
-    if new_xy:
-        #print(new_xy)
-        if new_xy[0]:
-            state.postac.x = new_xy[0]
-            state.vx = 0
-        
-        if new_xy[1]:
-            state.postac.y = new_xy[1]
-            state.vy = 0
-            if new_xy[1] == old_y:
-                state.standing = True
+    state.update_xy(new_xy, old_y)
     level.map.items.collision(state.postac.x, state.postac.y)
 
 pyglet.clock.schedule_interval(update, 1/60.0)
