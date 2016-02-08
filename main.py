@@ -84,6 +84,9 @@ def update(dt):
 
     if keys[key.SPACE]:
          state.jump() 
+    
+    if keys[key.X]:
+        state.punch()
 
     old_x, old_y = state.x, state.y
     state.x += state.vx * dt * 500

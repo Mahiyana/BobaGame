@@ -11,19 +11,20 @@ class Character(Sprite):
     def __init__(self,name,grid):
         super().__init__(name)
         grid_image = pyglet.image.load(grid)
-        grid_seq = pyglet.image.ImageGrid(grid_image, 2, 3)
-        self.standing_left = grid_seq[3]
-        self.moving_left_1 = grid_seq[4]
-        self.moving_left_2 = grid_seq[5]
+        grid_seq = pyglet.image.ImageGrid(grid_image, 2, 4)
+        self.standing_left = grid_seq[4]
+        self.moving_left_1 = grid_seq[5]
+        self.moving_left_2 = grid_seq[6]
         self.animation_left = pyglet.image.Animation.from_image_sequence([
             self.standing_left, self.moving_left_1, self.moving_left_2],0.1,True)
+        self.punch_left = grid_seq[7]
 
         self.standing_right = grid_seq[0]
         self.moving_right_1 = grid_seq[1]
         self.moving_right_2 = grid_seq[2]
         self.animation_right = pyglet.image.Animation.from_image_sequence([
             self.standing_right, self.moving_right_1, self.moving_right_2],0.1,True)
-
+        self.punch_right = grid_seq[3]
 
     standing = True
     standing_x = True
@@ -38,7 +39,6 @@ class Character(Sprite):
         if self.standing_x:
             self.image = self.animation_left
             self.vx = -1
-            #print(self.vy)
             self.standing_x = False
             self.last_direction = "left"
 
@@ -49,6 +49,12 @@ class Character(Sprite):
             self.standing_x = False    
             self.last_direction = "right"
     
+    def punch(self):
+        if self.last_direction == "left":
+            self.image = self.punch_left
+        else:
+            self.image = self.punch_right
+
     def stop_left(self):
         self.image = self.standing_left
         self.standing_x = True
