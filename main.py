@@ -10,8 +10,6 @@ from CollectionOfItems import CollectionOfItems
 from Map import Map
 from Level import Level
 from Camera import *
-from DangerousObject import DangerousObject
-from DangerousObjectsCollection import DangerousObjectsCollection
 
 config = pyglet.gl.Config(alpha_size=8, double_buffer=True)
 window = pyglet.window.Window(config=config )
