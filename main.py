@@ -74,12 +74,10 @@ def update(dt):
         state.vx += (1 - state.vx)*5.0*dt
         if state.vx > 1:
             state.vx = 1
-        state.right()
     elif keys[key.LEFT]:
         state.vx += (-1 - state.vx)*5.0*dt
         if state.vx < -1:
             state.vx = -1
-        state.left()
     elif -0.1 < state.vx < 0.1:
         state.vx = 0
     elif state.vx > 0:

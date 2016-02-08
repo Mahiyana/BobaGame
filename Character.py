@@ -13,61 +13,41 @@ class Character(Sprite):
         grid_image = pyglet.image.load(grid)
         grid_seq = pyglet.image.ImageGrid(grid_image, 2, 4)
         self.standing_left = grid_seq[4]
-        self.moving_left_1 = grid_seq[5]
-        self.moving_left_2 = grid_seq[6]
-        self.animation_left = pyglet.image.Animation.from_image_sequence([
-            self.standing_left, self.moving_left_1, self.moving_left_2],0.1,True)
+        self.animation_left = pyglet.image.Animation.from_image_sequence(grid_seq[4:7],0.1,True)
         self.punch_left = grid_seq[7]
 
         self.standing_right = grid_seq[0]
-        self.moving_right_1 = grid_seq[1]
-        self.moving_right_2 = grid_seq[2]
-        self.animation_right = pyglet.image.Animation.from_image_sequence([
-            self.standing_right, self.moving_right_1, self.moving_right_2],0.1,True)
+        self.animation_right = pyglet.image.Animation.from_image_sequence(grid_seq[0:3],0.1,True)
         self.punch_right = grid_seq[3]
 
     standing = True
     standing_x = True
     last_direction = None
+
+    def draw(self):
+        if self.vx < 0 and self.image != self.animation_left:
+            self.last_direction = -1
+            self.image = self.animation_left
+        elif self.vx > 0 and self.image != self.animation_right:
+            self.last_direction = 1
+            self.image = self.animation_right
+        elif self.vx == 0 and self.image == self.animation_right:
+            self.image = self.standing_right
+        elif self.vx == 0 and self.image == self.animation_left:
+            self.image = self.standing_left
+
+        return super().draw()
      
     def jump(self):
         if self.standing:
             self.vy = 2
             self.standing = False
     
-    def left(self):
-        if self.standing_x:
-            self.image = self.animation_left
-            self.standing_x = False
-            self.last_direction = "left"
-
-    def right(self):
-        if self.standing_x:
-            self.image = self.animation_right
-            self.standing_x = False    
-            self.last_direction = "right"
-    
     def punch(self):
-        if self.last_direction == "left":
+        if self.last_direction < 0:
             self.image = self.punch_left
         else:
             self.image = self.punch_right
-
-    def stop_left(self):
-        self.image = self.standing_left
-        self.standing_x = True
-        self.vx = 0
-
-    def stop_right(self):
-        self.image = self.standing_right
-        self.standing_x = True
-        self.vx = 0
-    
-    def stop_moving(self):
-        if self.last_direction == "left":
-            self.stop_left()
-        else:
-            self.stop_right()
 
     def check_borders(self, window_width, window_height):
         if self.x < 0: self.x = 0
