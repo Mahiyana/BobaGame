@@ -70,17 +70,22 @@ def on_draw():
     window.flip()
 
 def update(dt):
-    state.vx = 0
     if keys[key.RIGHT]:
-        state.vx = 1
+        state.vx += (1 - state.vx)*5.0*dt
+        if state.vx > 1:
+            state.vx = 1
         state.right()
-    
-    if keys[key.LEFT]:
-        state.vx = -1
+    elif keys[key.LEFT]:
+        state.vx += (-1 - state.vx)*5.0*dt
+        if state.vx < -1:
+            state.vx = -1
         state.left()
-    
-    if not(keys[key.RIGHT] or keys[key.LEFT]):
-        state.stop_moving()
+    elif -0.1 < state.vx < 0.1:
+        state.vx = 0
+    elif state.vx > 0:
+        state.vx = state.vx/(1+dt*10)
+    elif state.vx < 0:
+        state.vx = state.vx/(1+dt*10)
 
     if keys[key.SPACE]:
          state.jump() 
@@ -92,7 +97,7 @@ def update(dt):
     state.x += state.vx * dt * 500
     state.y += state.vy * dt * 500
     state.check_borders(window.width, window.height)
-    state.vy -= 9.82 * dt
+    state.vy -= 7 * dt
     new_xy = level.map.collision(old_x, old_y, state.x, state.y, state.width, state.height)
     state.update_xy(new_xy, old_y)
     level.map.items.collision(state.x, state.y)

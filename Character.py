@@ -38,14 +38,12 @@ class Character(Sprite):
     def left(self):
         if self.standing_x:
             self.image = self.animation_left
-            self.vx = -1
             self.standing_x = False
             self.last_direction = "left"
 
     def right(self):
         if self.standing_x:
             self.image = self.animation_right
-            self.vx = 1
             self.standing_x = False    
             self.last_direction = "right"
     
