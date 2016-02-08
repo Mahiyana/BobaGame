@@ -4,13 +4,14 @@ from pyglet.window import key
 import math
 
 from Character import Character
-from Player import Player
 from Platform import Platform
 from CollectableItem import CollectableItem
 from CollectionOfItems import CollectionOfItems
 from Map import Map
 from Level import Level
 from Camera import *
+from DangerousObject import DangerousObject
+from DangerousObjectsCollection import DangerousObjectsCollection
 
 config = pyglet.gl.Config(alpha_size=8, double_buffer=True)
 window = pyglet.window.Window(config=config )
@@ -24,7 +25,7 @@ char_height = 64
 keys = key.KeyStateHandler()
 window.push_handlers(keys)
 
-state = Player()
+state = Character("boba_standing_right","boba.png")
          
 level = Level(100,100)
 level.map.set_platform('trawa', 4, 3)
@@ -66,7 +67,7 @@ def on_draw():
     window.clear()
     background.draw()
     level.map.draw()
-    state.postac.draw()
+    state.draw()
     fps_display.draw()
     window.flip()
 
@@ -75,12 +76,10 @@ def update(dt):
     if keys[key.RIGHT]:
         state.vx = 1
         state.right()
-        #level.map.redraw_right(state.postac.x)
     
     if keys[key.LEFT]:
         state.vx = -1
         state.left()
-        #level.map.redraw_left(state.postac.x)
     
     if not(keys[key.RIGHT] or keys[key.LEFT]):
         state.stop_moving()
@@ -88,15 +87,15 @@ def update(dt):
     if keys[key.SPACE]:
          state.jump() 
 
-    old_x, old_y = state.postac.x, state.postac.y
-    state.postac.x += state.vx * dt * 500
-    state.postac.y += state.vy * dt * 500
+    old_x, old_y = state.x, state.y
+    state.x += state.vx * dt * 500
+    state.y += state.vy * dt * 500
     state.check_borders(window.width, window.height)
     state.vy -= 9.82 * dt
-    new_xy = level.map.collision(old_x, old_y, state.postac.x, state.postac.y, state.postac.width, state.postac.height)
+    new_xy = level.map.collision(old_x, old_y, state.x, state.y, state.width, state.height)
     state.update_xy(new_xy, old_y)
-    level.map.items.collision(state.postac.x, state.postac.y)
-    camera.x = state.postac.x - 0.5 * window.width
+    level.map.items.collision(state.x, state.y)
+    camera.x = state.x - 0.5 * window.width
 
 pyglet.clock.schedule_interval(update, 1/60.0)
 pyglet.app.run()
