@@ -45,6 +45,13 @@ level.map.set_platform('trawa', 20, 3)
 level.map.set_platform('trawa', 22, 3)
 level.map.set_platform('trawa', 23, 3)
 level.map.set_platform('trawa', 24, 3)
+level.map.set_platform('trawa', 26, 5)
+level.map.set_platform('trawa', 27, 5)
+level.map.set_platform('trawa', 30, 1)
+level.map.set_platform('trawa', 31, 1)
+level.map.set_platform('trawa', 32, 1)
+level.map.set_platform('trawa', 34, 3)
+level.map.set_platform('trawa', 35, 3)
 
 level.map.items.add_item(CollectableItem("star",200,200,20,20)) 
 level.map.items.add_item(CollectableItem("star",250,150,20,20)) 
@@ -68,13 +75,11 @@ def update(dt):
     if keys[key.RIGHT]:
         state.vx = 1
         state.right()
-        camera.x += state.vx * dt * 500
         #level.map.redraw_right(state.postac.x)
     
     if keys[key.LEFT]:
         state.vx = -1
         state.left()
-        camera.x += state.vx * dt * 500
         #level.map.redraw_left(state.postac.x)
     
     if not(keys[key.RIGHT] or keys[key.LEFT]):
@@ -91,6 +96,7 @@ def update(dt):
     new_xy = level.map.collision(old_x, old_y, state.postac.x, state.postac.y, state.postac.width, state.postac.height)
     state.update_xy(new_xy, old_y)
     level.map.items.collision(state.postac.x, state.postac.y)
+    camera.x = state.postac.x - 0.5 * window.width
 
 pyglet.clock.schedule_interval(update, 1/60.0)
 pyglet.app.run()

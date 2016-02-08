@@ -1,9 +1,10 @@
 import pyglet
+from Sprite import Sprite
 
-class Character(pyglet.sprite.Sprite):
+class Character(Sprite):
         
-    def __init__(self,image):
-        super().__init__(pyglet.image.load(image))
+    def __init__(self,name):
+        super().__init__(name)
         self.standing_left = pyglet.image.load("boba_standing_left.png")
         self.moving_left_1 = pyglet.image.load("boba_moving_left_1.png")
         self.moving_left_2 = pyglet.image.load("boba_moving_left_2.png")

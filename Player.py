@@ -14,7 +14,7 @@ class Player():
     standing_x = True
     last_direction = None
      
-    postac = Character("boba_standing_right.png")
+    postac = Character("boba_standing_right")
     def jump(self):
         if self.standing:
             self.vy = 2
@@ -54,7 +54,7 @@ class Player():
 
     def check_borders(self, window_width, window_height):
         if self.postac.x < 0: self.postac.x = 0
-        elif self.postac.x > window_width - self.postac.width: self.postac.x = window_width - self.postac.width
+        elif self.postac.x > 2*window_width - self.postac.width: self.postac.x = 2*window_width - self.postac.width
         
         if self.postac.y <= 0: 
             self.postac.y = 0

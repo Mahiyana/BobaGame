@@ -1,6 +1,7 @@
 from CollectionOfItems import CollectionOfItems
 from Platform import Platform
 import math
+from Camera import *
 
 platform_width = 32
 platform_height = 32
@@ -55,8 +56,9 @@ class Map:
 
 
     def collision(self, xp, yp, xk, yk, w, h):
+        #xp, yp, xk, yk = int(xp+camera.x), int(yp+camera.y), int(xk+camera.x+(xk-xp)), int(yk+camera.y)
         xp, yp, xk, yk = int(xp), int(yp), int(xk), int(yk)
-       
+
         min_x = int(xk/platform_width)
         max_x = min([self.width-1, math.ceil((xk+w)/platform_width)])
         min_y = int(yk/platform_height)
