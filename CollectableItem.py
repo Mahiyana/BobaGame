@@ -1,12 +1,12 @@
 import pyglet
+from Sprite import Sprite
 
-class CollectableItem(pyglet.sprite.Sprite):
+class CollectableItem(Sprite):
     def __init__(self, name,x,y,width,height):
        #self.width = width
        #self.height = height
         self.taken = False
-        image = pyglet.resource.image(name+".png")
-        super().__init__(image)
+        super().__init__(name)
         self.x = x
         self.y = y
  

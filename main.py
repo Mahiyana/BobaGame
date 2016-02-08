@@ -10,6 +10,7 @@ from CollectableItem import CollectableItem
 from CollectionOfItems import CollectionOfItems
 from Map import Map
 from Level import Level
+from Camera import *
 
 config = pyglet.gl.Config(alpha_size=8, double_buffer=True)
 window = pyglet.window.Window(config=config )
@@ -67,11 +68,13 @@ def update(dt):
     if keys[key.RIGHT]:
         state.vx = 1
         state.right()
+        camera.x += state.vx * dt * 500
         #level.map.redraw_right(state.postac.x)
     
     if keys[key.LEFT]:
         state.vx = -1
         state.left()
+        camera.x += state.vx * dt * 500
         #level.map.redraw_left(state.postac.x)
     
     if not(keys[key.RIGHT] or keys[key.LEFT]):
