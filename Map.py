@@ -32,6 +32,7 @@ class Map:
                 if not cell: continue
                 cell.draw()
         self.items.draw()        
+        self.bullets.draw()
 
     def set_platform(self, name, x, y):
         self.map[x][y] = platform = Platform(name)
@@ -59,7 +60,6 @@ class Map:
     
     def update_bullets(self):
         self.bullets.update()
-        self.bullets.draw()
     
     def bullet_collision(self, bullet_x, bullet_y):
         pass    
