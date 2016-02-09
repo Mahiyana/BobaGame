@@ -11,7 +11,6 @@ class Character(Sprite):
     ay = 0
     ax = 0
     shot_cooldown = 0
-    bullets = BulletsCollection()
     def __init__(self,name,grid):
         super().__init__(name)
         grid_image = pyglet.image.load(grid)
@@ -29,7 +28,6 @@ class Character(Sprite):
     last_direction = 0
 
     def draw(self):
-        self.bullets.draw()
         if self.vx < 0 and self.image != self.animation_left:
             self.last_direction = -1
             self.image = self.animation_left
@@ -56,9 +54,11 @@ class Character(Sprite):
             else:
                 self.image = self.shot_right
                 right = True
-            self.bullets.add_bullet(Bullet("bullet",self.x, self.y + int(0.5*self.height), right))
             self.shot_cooldown = 20
-
+            return Bullet("bullet",self.x, self.y + int(0.75*self.height), right)
+        else:
+            return False
+    
     def check_borders(self, window_width, window_height):
         if self.x < 0: self.x = 0
         elif self.x > 2*window_width - self.width: self.x = 2*window_width - self.width
@@ -84,5 +84,4 @@ class Character(Sprite):
     def update_bullets(self):
         if self.shot_cooldown > 0:
             self.shot_cooldown -= 1
-        self.bullets.update()
-        self.bullets.draw()
+        

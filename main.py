@@ -63,7 +63,7 @@ background = pyglet.sprite.Sprite(background_img)
 @window.event
 def on_draw():
     window.clear()
-    background.draw()
+    #background.draw()
     level.map.draw()
     state.draw()
     fps_display.draw()
@@ -89,7 +89,8 @@ def update(dt):
          state.jump() 
     
     if keys[key.X]:
-        state.shot()
+        level.map.bullets.add_bullet(state.shot())
+
 
     #print(len(state.bullets.collection))
     old_x, old_y = state.x, state.y
@@ -101,6 +102,7 @@ def update(dt):
     state.update_xy(new_xy, old_y)
     level.map.items.collision(state.x, state.y)
     camera.x = state.x - 0.5 * window.width
+    level.map.update_bullets()
     state.update_bullets()
 
 pyglet.clock.schedule_interval(update, 1/60.0)

@@ -2,6 +2,8 @@ from CollectionOfItems import CollectionOfItems
 from Platform import Platform
 import math
 from Camera import *
+from Bullet import Bullet
+from BulletsCollection import BulletsCollection
 
 platform_width = 32
 platform_height = 32
@@ -11,7 +13,8 @@ class Map:
     items = CollectionOfItems()
     map_x = 0
     map_y = 0
-
+    bullets = BulletsCollection()
+    
     def __init__(self, width=10, height=10):
         self.map = []
         self.width = width
@@ -53,7 +56,13 @@ class Map:
         if(x_platform*platform_width < point[0] + x_postaci < (x_platform+1)*platform_width) and (y_platform*platform_height < point[1] + y_postaci < (y_platform+1)*platform_height):
             return True
       return False
-
+    
+    def update_bullets(self):
+        self.bullets.update()
+        self.bullets.draw()
+    
+    def bullet_collision(self, bullet_x, bullet_y):
+        pass    
 
     def collision(self, xp, yp, xk, yk, w, h):
         #xp, yp, xk, yk = int(xp+camera.x), int(yp+camera.y), int(xk+camera.x+(xk-xp)), int(yk+camera.y)

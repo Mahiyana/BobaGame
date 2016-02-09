@@ -7,13 +7,18 @@ class Bullet(Sprite):
         self.x = x
         self.y = y
         self.right = right
+        self.span = 10
 
     def update(self):
         if self.right:
             self.x += 20
         else:
             self.x -= 20
+        self.span -= 1    
 
-
+    def draw(self):
+        super().draw()
+        print("DRAWN")
+        print(self.span)
 
 
