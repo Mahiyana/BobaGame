@@ -46,6 +46,23 @@ class Character(Sprite):
             self.vy = 2
             self.standing = False
     
+    def move(self, dt, moving):
+        if moving == 1: #move right
+            self.vx += (1 - self.vx)*5.0*dt
+            if self.vx > 1:
+                self.vx = 1
+        elif moving == -1: #move left
+            self.vx += (-1 - self.vx)*5.0*dt
+            if self.vx < -1:
+                self.vx = -1
+        elif -0.1 < self.vx < 0.1:
+            self.vx = 0
+        elif self.vx > 0:
+            self.vx = self.vx/(1+dt*10)
+        elif self.vx < 0:
+            self.vx = self.vx/(1+dt*10)
+
+
     def shot(self):
         if self.shot_cooldown <= 0:
             if self.last_direction < 0:

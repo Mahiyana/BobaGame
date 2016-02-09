@@ -10,6 +10,7 @@ from CollectionOfItems import CollectionOfItems
 from Map import Map
 from Level import Level
 from Camera import *
+from Enemy import Enemy
 
 config = pyglet.gl.Config(alpha_size=8, double_buffer=True)
 window = pyglet.window.Window(config=config )
@@ -60,6 +61,7 @@ level.map.items.add_item(CollectableItem("star",800,300,20,20))
 background_img = pyglet.resource.image("background.png")
 background = pyglet.sprite.Sprite(background_img)
 
+enemy = Enemy("han_right","han.png",500,0)
 @window.event
 def on_draw():
     window.clear()
@@ -67,30 +69,23 @@ def on_draw():
     level.map.draw()
     state.draw()
     fps_display.draw()
+    enemy.draw()
     window.flip()
 
 def update(dt):
+    moving = None
     if keys[key.RIGHT]:
-        state.vx += (1 - state.vx)*5.0*dt
-        if state.vx > 1:
-            state.vx = 1
+        moving = 1 
     elif keys[key.LEFT]:
-        state.vx += (-1 - state.vx)*5.0*dt
-        if state.vx < -1:
-            state.vx = -1
-    elif -0.1 < state.vx < 0.1:
-        state.vx = 0
-    elif state.vx > 0:
-        state.vx = state.vx/(1+dt*10)
-    elif state.vx < 0:
-        state.vx = state.vx/(1+dt*10)
-
+        moving = -1
+    
     if keys[key.SPACE]:
          state.jump() 
     
     if keys[key.X]:
         level.map.bullets.add_bullet(state.shot())
 
+    state.move(dt,moving)
 
     old_x, old_y = state.x, state.y
     state.x += state.vx * dt * 500
@@ -104,6 +99,12 @@ def update(dt):
     level.map.update_bullets()
     state.update_bullets()
     level.map.bullet_collision()
+
+    old_enem_x, old_enem_y = enemy.x, enemy.y
+    enemy.move_self(dt)
+    new_enem_xy = level.map.collision(old_enem_x, old_enem_y, enemy.x, enemy.y, enemy.width, enemy.height)
+    enemy.update_xy(new_enem_xy, old_enem_y)
+    if new_enem_xy: enemy.change_direction() 
 
 pyglet.clock.schedule_interval(update, 1/60.0)
 pyglet.app.run()
