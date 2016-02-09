@@ -1,5 +1,7 @@
 import pyglet
 from Sprite import Sprite
+from BulletsCollection import BulletsCollection
+from Bullet import Bullet
 
 class Character(Sprite):
     dx = 0
@@ -8,23 +10,26 @@ class Character(Sprite):
     vx = 0
     ay = 0
     ax = 0
+    shot_cooldown = 0
+    bullets = BulletsCollection()
     def __init__(self,name,grid):
         super().__init__(name)
         grid_image = pyglet.image.load(grid)
         grid_seq = pyglet.image.ImageGrid(grid_image, 2, 4)
         self.standing_left = grid_seq[4]
         self.animation_left = pyglet.image.Animation.from_image_sequence(grid_seq[4:7],0.1,True)
-        self.punch_left = grid_seq[7]
+        self.shot_left = grid_seq[7]
 
         self.standing_right = grid_seq[0]
         self.animation_right = pyglet.image.Animation.from_image_sequence(grid_seq[0:3],0.1,True)
-        self.punch_right = grid_seq[3]
+        self.shot_right = grid_seq[3]
 
     standing = True
     standing_x = True
-    last_direction = None
+    last_direction = 0
 
     def draw(self):
+        self.bullets.draw()
         if self.vx < 0 and self.image != self.animation_left:
             self.last_direction = -1
             self.image = self.animation_left
@@ -43,11 +48,16 @@ class Character(Sprite):
             self.vy = 2
             self.standing = False
     
-    def punch(self):
-        if self.last_direction < 0:
-            self.image = self.punch_left
-        else:
-            self.image = self.punch_right
+    def shot(self):
+        if self.shot_cooldown <= 0:
+            if self.last_direction < 0:
+                self.image = self.shot_left
+                right = False
+            else:
+                self.image = self.shot_right
+                right = True
+            self.bullets.add_bullet(Bullet("bullet",self.x, self.y + int(0.5*self.height), right))
+            self.shot_cooldown = 20
 
     def check_borders(self, window_width, window_height):
         if self.x < 0: self.x = 0
@@ -70,4 +80,9 @@ class Character(Sprite):
               self.vy = 0
               if new_xy[1] == old_y:
                   self.standing = True
-   
+
+    def update_bullets(self):
+        if self.shot_cooldown > 0:
+            self.shot_cooldown -= 1
+        self.bullets.update()
+        self.bullets.draw()
