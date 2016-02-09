@@ -92,7 +92,6 @@ def update(dt):
         level.map.bullets.add_bullet(state.shot())
 
 
-    #print(len(state.bullets.collection))
     old_x, old_y = state.x, state.y
     state.x += state.vx * dt * 500
     state.y += state.vy * dt * 500
@@ -104,6 +103,7 @@ def update(dt):
     camera.x = state.x - 0.5 * window.width
     level.map.update_bullets()
     state.update_bullets()
+    level.map.bullet_collision()
 
 pyglet.clock.schedule_interval(update, 1/60.0)
 pyglet.app.run()

@@ -61,8 +61,10 @@ class Map:
     def update_bullets(self):
         self.bullets.update()
     
-    def bullet_collision(self, bullet_x, bullet_y):
-        pass    
+    def bullet_collision(self):
+        for bullet in self.bullets.collection:
+            if self.map[int(bullet.x/platform_width)][int(bullet.y/platform_height)]:
+                self.bullets.collection.remove(bullet)
 
     def collision(self, xp, yp, xk, yk, w, h):
         #xp, yp, xk, yk = int(xp+camera.x), int(yp+camera.y), int(xk+camera.x+(xk-xp)), int(yk+camera.y)

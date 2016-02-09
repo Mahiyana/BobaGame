@@ -18,7 +18,5 @@ class Bullet(Sprite):
 
     def draw(self):
         super().draw()
-        print("DRAWN")
-        print(self.span)
 
 
