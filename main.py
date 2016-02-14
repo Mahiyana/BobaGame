@@ -100,23 +100,7 @@ def update(dt):
     state.update_bullets()
     level.map.bullet_collision()
 
-    old_enem_x, old_enem_y = enemy.x, enemy.y
-    enemy.move_self(dt)
-    new_enem_xy = level.map.collision(old_enem_x, old_enem_y, enemy.x, enemy.y, enemy.width, enemy.height)
-    will_fall = level.map.collision(enemy.x + enemy.direction*enemy.width+enemy.vx*20, old_enem_y, enemy.x + enemy.direction*enemy.width+enemy.vx*20, old_enem_y-1, enemy.width, enemy.height)
-    will_fall = not (will_fall and will_fall[1] == old_enem_y)
-    enemy.check_borders(window.width, window.height)
-    if new_enem_xy:
-        if new_enem_xy[0] :
-            enemy.change_direction() 
-    if will_fall:
-        enemy.y = old_enem_y
-        enemy.x = old_enem_x
-        enemy.change_direction()
-    enemy.update_xy(dt, new_enem_xy, old_enem_y)
-            
-    if enemy.notice(state.x, state.y): level.map.bullets.add_bullet(enemy.shot())
-    enemy.update_bullets()
-
+    enemy.update_all(level, dt, window.width, window.height, state.x, state.y)
+   
 pyglet.clock.schedule_interval(update, 1/60.0)
 pyglet.app.run()
