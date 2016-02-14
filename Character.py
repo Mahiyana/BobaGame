@@ -86,7 +86,8 @@ class Character(Sprite):
             self.vy = 0
         elif self.y > window_height - self.height: self.y = window_height - self.height
 
-    def update_xy(self, new_xy, old_y):
+    def update_xy(self, dt, new_xy, old_y):
+        self.vy -= 7 * dt
         if new_xy:
           if new_xy[0]:
               self.x = new_xy[0]

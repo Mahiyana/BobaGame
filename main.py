@@ -61,7 +61,8 @@ level.map.items.add_item(CollectableItem("star",800,300,20,20))
 background_img = pyglet.resource.image("background.png")
 background = pyglet.sprite.Sprite(background_img)
 
-enemy = Enemy("han_right","han.png",500,0)
+enemy = Enemy("han_right","han.png",150,32)
+
 @window.event
 def on_draw():
     window.clear()
@@ -91,9 +92,8 @@ def update(dt):
     state.x += state.vx * dt * 500
     state.y += state.vy * dt * 500
     state.check_borders(window.width, window.height)
-    state.vy -= 7 * dt
     new_xy = level.map.collision(old_x, old_y, state.x, state.y, state.width, state.height)
-    state.update_xy(new_xy, old_y)
+    state.update_xy(dt, new_xy, old_y)
     level.map.items.collision(state.x, state.y)
     camera.x = state.x - 0.5 * window.width
     level.map.update_bullets()
@@ -103,8 +103,18 @@ def update(dt):
     old_enem_x, old_enem_y = enemy.x, enemy.y
     enemy.move_self(dt)
     new_enem_xy = level.map.collision(old_enem_x, old_enem_y, enemy.x, enemy.y, enemy.width, enemy.height)
-    enemy.update_xy(new_enem_xy, old_enem_y)
-    if new_enem_xy: enemy.change_direction() 
+    will_fall = level.map.collision(enemy.x + enemy.direction*enemy.width+enemy.vx*20, old_enem_y, enemy.x + enemy.direction*enemy.width+enemy.vx*20, old_enem_y-1, enemy.width, enemy.height)
+    will_fall = not (will_fall and will_fall[1] == old_enem_y)
+    enemy.check_borders(window.width, window.height)
+    if new_enem_xy:
+        if new_enem_xy[0] :
+            enemy.change_direction() 
+    if will_fall:
+        enemy.y = old_enem_y
+        enemy.x = old_enem_x
+        enemy.change_direction()
+    enemy.update_xy(dt, new_enem_xy, old_enem_y)
+            
     if enemy.notice(state.x, state.y): level.map.bullets.add_bullet(enemy.shot())
     enemy.update_bullets()
 
