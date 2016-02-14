@@ -105,6 +105,8 @@ def update(dt):
     new_enem_xy = level.map.collision(old_enem_x, old_enem_y, enemy.x, enemy.y, enemy.width, enemy.height)
     enemy.update_xy(new_enem_xy, old_enem_y)
     if new_enem_xy: enemy.change_direction() 
+    if enemy.notice(state.x, state.y): level.map.bullets.add_bullet(enemy.shot())
+    enemy.update_bullets()
 
 pyglet.clock.schedule_interval(update, 1/60.0)
 pyglet.app.run()
