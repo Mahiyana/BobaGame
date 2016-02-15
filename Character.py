@@ -10,6 +10,7 @@ class Character(Sprite):
     vx = 0
     ay = 0
     ax = 0
+    lives = 3
     shot_cooldown = 0
     def __init__(self,name,grid):
         super().__init__(name)
@@ -68,11 +69,13 @@ class Character(Sprite):
             if self.last_direction < 0:
                 self.image = self.shot_left
                 right = False
+                bullet =  Bullet("bullet",self.x, self.y + int(0.75*self.height), right)
             else:
                 self.image = self.shot_right
                 right = True
+                bullet =  Bullet("bullet",self.x + self.width, self.y + int(0.75*self.height), right)
             self.shot_cooldown = 20
-            return Bullet("bullet",self.x, self.y + int(0.75*self.height), right)
+            return bullet
         else:
             return False
     
@@ -99,7 +102,10 @@ class Character(Sprite):
               if new_xy[1] == old_y:
                   self.standing = True
 
-    def update_bullets(self):
+    def update_bullets(self, bullets):
         if self.shot_cooldown > 0:
             self.shot_cooldown -= 1
-        
+        for bullet in bullets:
+            if self.x < bullet.x < self.x + self.width and self.y < bullet.y < self.y + self.height:
+                self.lives -= 1
+                bullets.remove(bullet)

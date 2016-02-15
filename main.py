@@ -33,9 +33,9 @@ level.map.set_platform('trawa', 4, 5)
 level.map.set_platform('trawa', 5, 0)
 level.map.set_platform('trawa', 6, 0)
 level.map.set_platform('trawa', 7, 0)
-level.map.set_platform('trawa', 10, 3)
-level.map.set_platform('trawa', 11, 3)
-level.map.set_platform('trawa', 12, 3)
+level.map.set_platform('trawa', 8, 0)
+level.map.set_platform('trawa', 9, 0)
+level.map.set_platform('trawa', 10, 0)
 level.map.set_platform('trawa', 14, 5)
 level.map.set_platform('trawa', 15, 5)
 level.map.set_platform('trawa', 16, 5)
@@ -61,7 +61,18 @@ level.map.items.add_item(CollectableItem("star",800,300,20,20))
 background_img = pyglet.resource.image("background.png")
 background = pyglet.sprite.Sprite(background_img)
 
-enemy = Enemy("han_right","han.png",150,32)
+enemy = Enemy("han_right","han.png",300,32)
+
+heart_image = pyglet.resource.image('heart.png')
+heart = pyglet.sprite.Sprite(heart_image)
+heart.x = window.width*0.9
+heart.y = window.height*0.9
+heart2 = pyglet.sprite.Sprite(heart_image)
+heart2.x = window.width*0.9 - 25
+heart2.y = window.height*0.9
+heart3 = pyglet.sprite.Sprite(heart_image)
+heart3.x = window.width*0.9 - 50
+heart3.y = window.height*0.9
 
 @window.event
 def on_draw():
@@ -71,9 +82,19 @@ def on_draw():
     state.draw()
     fps_display.draw()
     enemy.draw()
+    
+    if state.lives > 2:
+        heart.draw()
+    if state.lives > 1:
+        heart2.draw() 
+    if state.lives > 0:
+        heart3.draw() 
+    
     window.flip()
 
+
 def update(dt):
+    
     moving = None
     if keys[key.RIGHT]:
         moving = 1 
@@ -97,10 +118,10 @@ def update(dt):
     level.map.items.collision(state.x, state.y)
     camera.x = state.x - 0.5 * window.width
     level.map.update_bullets()
-    state.update_bullets()
+    state.update_bullets(level.map.bullets.collection)
     level.map.bullet_collision()
 
     enemy.update_all(level, dt, window.width, window.height, state.x, state.y)
-   
+    
 pyglet.clock.schedule_interval(update, 1/60.0)
 pyglet.app.run()

@@ -17,7 +17,7 @@ class Enemy(Character):
         self.direction = 0 - self.direction
 
     def notice(self, char_x, char_y):
-        print(self.x, char_x, self.direction)
+        #print(self.x, char_x, self.direction)
         if ((self.x + 100  > char_x and self.direction == 1 and char_x > self. x) or (char_x + 100 > self.x  and self.direction == -1 and char_x < self.x)) and char_y == self.y :
             self.vx = 0
             self.standing = True
@@ -41,5 +41,5 @@ class Enemy(Character):
         self.update_xy(dt, new_enem_xy, old_enem_y)
                 
         if self.notice(char_x, char_y): level.map.bullets.add_bullet(self.shot())
-        self.update_bullets()
+        self.update_bullets(level.map.bullets.collection)
 
