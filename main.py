@@ -81,7 +81,8 @@ def on_draw():
     level.map.draw()
     state.draw()
     fps_display.draw()
-    enemy.draw()
+    if enemy.lives >= 1:
+        enemy.draw()
     
     if state.lives > 2:
         heart.draw()
