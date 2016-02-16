@@ -11,6 +11,7 @@ from Map import Map
 from Level import Level
 from Camera import *
 from Enemy import Enemy
+from EnemyCollection import EnemyCollection
 
 config = pyglet.gl.Config(alpha_size=8, double_buffer=True)
 window = pyglet.window.Window(config=config )
@@ -61,7 +62,11 @@ level.map.items.add_item(CollectableItem("star",800,300,20,20))
 background_img = pyglet.resource.image("background.png")
 background = pyglet.sprite.Sprite(background_img)
 
-enemy = Enemy("han_right","han.png",300,32)
+enemies = EnemyCollection()
+han = Enemy("han_right","han.png",300,32)
+han2 = Enemy("han_right","han.png",600,100)
+enemies.add_enemy(han)
+enemies.add_enemy(han2)
 
 heart_image = pyglet.resource.image('heart.png')
 heart = pyglet.sprite.Sprite(heart_image)
@@ -81,9 +86,7 @@ def on_draw():
     level.map.draw()
     state.draw()
     fps_display.draw()
-    if enemy.lives >= 1:
-        enemy.draw()
-    
+    enemies.draw() 
     if state.lives > 2:
         heart.draw()
     if state.lives > 1:
@@ -109,7 +112,13 @@ def update(dt):
         level.map.bullets.add_bullet(state.shot())
 
     state.move(dt,moving)
-
+    
+    if state.lives <= 0:
+        state.x = 0
+        state.y = 0
+        state.lives = 3
+        state.image = state.standing_right
+ 
     old_x, old_y = state.x, state.y
     state.x += state.vx * dt * 500
     state.y += state.vy * dt * 500
@@ -122,7 +131,7 @@ def update(dt):
     state.update_bullets(level.map.bullets.collection)
     level.map.bullet_collision()
 
-    enemy.update_all(level, dt, window.width, window.height, state.x, state.y)
+    enemies.update_all(level, dt, window.width, window.height, state.x, state.y)
     
 pyglet.clock.schedule_interval(update, 1/60.0)
 pyglet.app.run()

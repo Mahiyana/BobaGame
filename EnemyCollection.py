@@ -10,7 +10,7 @@ class EnemyCollection():
                 enemy.draw()
 
 
-    def update_all(level, dt, window_width, window_height, state_x, state_y):
+    def update_all(self, level, dt, window_width, window_height, state_x, state_y):
         for enemy in self.collection:
             if enemy.lives <= 0:
                 self.collection.remove(enemy)
