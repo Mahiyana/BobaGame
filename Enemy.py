@@ -17,8 +17,7 @@ class Enemy(Character):
         self.direction = 0 - self.direction
 
     def notice(self, char_x, char_y):
-        #print(self.x, char_x, self.direction)
-        if ((self.x + 100  > char_x and self.direction == 1 and char_x > self. x) or (char_x + 100 > self.x  and self.direction == -1 and char_x < self.x)) and char_y == self.y :
+        if ((self.x + 100  > char_x and self.direction == 1 and char_x > self. x) or (char_x + 100 > self.x  and self.direction == -1 and char_x < self.x)) and char_y == self.y and self.lives > 0 :
             self.vx = 0
             self.standing = True
             return True
