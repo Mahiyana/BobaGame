@@ -12,6 +12,7 @@ from Level import Level
 from Camera import *
 from Enemy import Enemy
 from EnemyCollection import EnemyCollection
+from Sprite import Sprite
 
 config = pyglet.gl.Config(alpha_size=8, double_buffer=True)
 window = pyglet.window.Window(config=config )
@@ -59,14 +60,14 @@ level.map.items.add_item(CollectableItem("star",250,150,20,20))
 level.map.items.add_item(CollectableItem("star",500,300,20,20)) 
 level.map.items.add_item(CollectableItem("star",800,300,20,20)) 
 
-background_img = pyglet.resource.image("background.png")
-background = pyglet.sprite.Sprite(background_img)
+background = Sprite("background")
+background.x = (state.x - 0.5 * window.width)
 
 enemies = EnemyCollection()
 han = Enemy("han_right","han.png",300,32)
 han2 = Enemy("han_right","han.png",600,100)
 enemies.add_enemy(han)
-enemies.add_enemy(han2)
+#enemies.add_enemy(han2)
 
 heart_image = pyglet.resource.image('heart.png')
 heart = pyglet.sprite.Sprite(heart_image)
@@ -82,7 +83,9 @@ heart3.y = window.height*0.9
 @window.event
 def on_draw():
     window.clear()
-    #background.draw()
+
+    background.draw()
+    
     level.map.draw()
     state.draw()
     fps_display.draw()
@@ -98,7 +101,7 @@ def on_draw():
 
 
 def update(dt):
-    
+
     moving = None
     if keys[key.RIGHT]:
         moving = 1 
@@ -115,7 +118,7 @@ def update(dt):
     
     if state.lives <= 0:
         state.x = 0
-        state.y = 0
+        state.y = 50
         state.lives = 3
         state.image = state.standing_right
  
