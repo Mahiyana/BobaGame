@@ -2,7 +2,7 @@ import pyglet
 from Character import Character
 
 class Enemy(Character):
-    direction = 1
+    direction = 1 #1 => moving right, -1 => moving left
     def __init__(self,name,grid,x,y):
         super().__init__(name,grid)
         self.x = x
@@ -17,7 +17,7 @@ class Enemy(Character):
         self.direction = 0 - self.direction
 
     def notice(self, char_x, char_y):
-        if ((self.x + 100  > char_x and self.direction == 1 and char_x > self. x) or (char_x + 100 > self.x  and self.direction == -1 and char_x < self.x)) and char_y == self.y and self.lives > 0 :
+        if (( self.x + 100 > char_x and self.direction == 1 and char_x > self. x) or (char_x + 100 > self.x  and self.direction == -1 and char_x < self.x)) and char_y == self.y and self.lives > 0 :
             self.vx = 0
             self.standing = True
             return True

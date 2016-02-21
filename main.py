@@ -26,10 +26,9 @@ char_height = 64
 keys = key.KeyStateHandler()
 window.push_handlers(keys)
 
-state = Character("boba_standing_right","boba.png")
+state = Character("boba_fett_right","boba_fett.png")
          
 level = Level(100,100)
-level.map.set_platform('trawa', 4, 3)
 level.map.set_platform('trawa', 4, 4)
 level.map.set_platform('trawa', 4, 5)
 level.map.set_platform('trawa', 5, 0)
@@ -44,6 +43,7 @@ level.map.set_platform('trawa', 16, 5)
 level.map.set_platform('trawa', 18, 3)
 level.map.set_platform('trawa', 19, 3)
 level.map.set_platform('trawa', 20, 3)
+level.map.set_platform('trawa', 21, 3)
 level.map.set_platform('trawa', 22, 3)
 level.map.set_platform('trawa', 23, 3)
 level.map.set_platform('trawa', 24, 3)
@@ -60,14 +60,14 @@ level.map.items.add_item(CollectableItem("star",250,150,20,20))
 level.map.items.add_item(CollectableItem("star",500,300,20,20)) 
 level.map.items.add_item(CollectableItem("star",800,300,20,20)) 
 
-background = Sprite("background")
+background = Sprite("tatooine1")
 background.x = (state.x - 0.5 * window.width)
 
 enemies = EnemyCollection()
-han = Enemy("han_right","han.png",300,32)
-han2 = Enemy("han_right","han.png",600,100)
+han = Enemy("boba_fett_ghost_right","boba_fett_ghost.png",300,32)
+han2 = Enemy("boba_fett_ghost_right","boba_fett_ghost.png",600,100)
 enemies.add_enemy(han)
-#enemies.add_enemy(han2)
+enemies.add_enemy(han2)
 
 heart_image = pyglet.resource.image('heart.png')
 heart = pyglet.sprite.Sprite(heart_image)
@@ -84,7 +84,7 @@ heart3.y = window.height*0.9
 def on_draw():
     window.clear()
 
-    background.draw()
+    #background.draw()
     
     level.map.draw()
     state.draw()
@@ -101,7 +101,6 @@ def on_draw():
 
 
 def update(dt):
-
     moving = None
     if keys[key.RIGHT]:
         moving = 1 

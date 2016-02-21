@@ -15,21 +15,33 @@ class Character(Sprite):
     def __init__(self,name,grid):
         super().__init__(name)
         grid_image = pyglet.image.load(grid)
-        grid_seq = pyglet.image.ImageGrid(grid_image, 2, 4)
-        self.standing_left = grid_seq[4]
-        self.animation_left = pyglet.image.Animation.from_image_sequence(grid_seq[4:7],0.1,True)
-        self.shot_left = grid_seq[7]
+        grid_seq = pyglet.image.ImageGrid(grid_image, 3, 8)
+        self.standing_left = grid_seq[1]
+        self.animation_left = pyglet.image.Animation.from_image_sequence(grid_seq[8:15],0.1,True)
+        self.shot_left = grid_seq[3]
+        self.jump_left = grid_seq[5]
+        self.fall_left = grid_seq[7]
 
         self.standing_right = grid_seq[0]
-        self.animation_right = pyglet.image.Animation.from_image_sequence(grid_seq[0:3],0.1,True)
-        self.shot_right = grid_seq[3]
+        self.animation_right = pyglet.image.Animation.from_image_sequence(grid_seq[16:23],0.1,True)
+        self.shot_right = grid_seq[2]
+        self.jump_right = grid_seq[4]
+        self.fall_right = grid_seq[6]
 
     standing = True
     standing_x = True
     last_direction = 0
 
     def draw(self):
-        if self.vx < 0 and self.image != self.animation_left:
+        if self.vy > 0 and self.last_direction == -1:
+            self.image = self.jump_left
+        elif self.vy > 0 and self.last_direction == 1:
+            self.image = self.jump_right
+        elif self.vy < -1 and self.last_direction == -1:
+            self.image = self.fall_left
+        elif self.vy < -1 and self.last_direction == 1:
+            self.image = self.fall_right
+        elif self.vx < 0 and self.image != self.animation_left:
             self.last_direction = -1
             self.image = self.animation_left
         elif self.vx > 0 and self.image != self.animation_right:
@@ -38,7 +50,12 @@ class Character(Sprite):
         elif self.vx == 0 and self.image == self.animation_right:
             self.image = self.standing_right
         elif self.vx == 0 and self.image == self.animation_left:
-            self.image = self.standing_left
+            self.image = self.standing_left    
+        elif self.vx == 0 and self.standing:
+            if self.last_direction == 1 and self.shot_cooldown == 0:
+                self.image = self.standing_right
+            elif self.last_direction == -1 and self.shot_cooldown == 0:
+                self.image = self.standing_left
 
         return super().draw()
      
