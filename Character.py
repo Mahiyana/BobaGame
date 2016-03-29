@@ -98,7 +98,7 @@ class Character(Sprite):
     
     def check_borders(self, window_width, window_height):
         if self.x < 0: self.x = 0
-        elif self.x > 2*window_width - self.width: self.x = 2*window_width - self.width
+        #elif self.x > 4*window_width - self.width: self.x = 4*window_width - self.width
         
         if self.y <= 0: 
             self.y = 0
